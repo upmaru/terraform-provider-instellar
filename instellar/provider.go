@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 var (
@@ -35,6 +36,15 @@ func (p *instellarProvider) Schema(_ context.Context, _ provider.SchemaRequest, 
 				Description: "Host for instellar API. May also be provided via INSTELLAR_HOST env variable.",
 				Optional:    true,
 			},
+			"auth_token": schema.StringAttribute{
+				Description: "Authentication token for instellar, May also be provided via INSTELLAR_AUTH_TOKEN env variable.",
+				Optional:    true,
+				Sensitive:   true,
+			},
 		},
 	}
+}
+
+func (p *instellarProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
+	tflog.Info(ctx, "Configuring Instellar client")
 }
