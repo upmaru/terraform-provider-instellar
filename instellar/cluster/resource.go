@@ -1,4 +1,4 @@
-package instellar
+package cluster
 
 import (
 	"context"
