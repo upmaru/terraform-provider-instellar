@@ -9,8 +9,7 @@ import (
 const (
 	ProviderConfig = `
 	provider "instellar" {
-		host = "https://some.example.com"
-		auth_token = "some-example-auth-token"
+		host = "http://localhost:4000"
 	}
 	`
 )

@@ -116,7 +116,7 @@ func (p *instellarProvider) Configure(ctx context.Context, req provider.Configur
 	client, err := instc.NewClient(&host, &auth_token)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unalbe to create Instellar API Client",
+			"Unable to create Instellar API Client",
 			"An unexected error occured when creating Instellar API client. "+
 				"If the error is not clear, please contact provider developers.\n\n"+
 				"Instellar Client Error: "+err.Error(),
