@@ -18,7 +18,11 @@ import (
 //go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
 
 func main() {
-	providerserver.Serve(context.Background(), instellar.New, providerserver.ServeOpts{
+	err := providerserver.Serve(context.Background(), instellar.New, providerserver.ServeOpts{
 		Address: "registry.terraform.io/upmaru/instellar",
 	})
+
+	if err != nil {
+		return
+	}
 }
