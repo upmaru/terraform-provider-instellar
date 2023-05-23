@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/upmaru/terraform-provider-instellar/instellar"
@@ -23,6 +24,6 @@ func main() {
 	})
 
 	if err != nil {
-		return
+		log.Fatal(err.Error())
 	}
 }
