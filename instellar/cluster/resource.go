@@ -2,9 +2,10 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	// instellar client = instc
+	// instellar client = instc.
 	instc "github.com/upmaru/instellar-go"
 
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -92,12 +93,25 @@ func (r *clusterResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 	}
 }
 
-func (r *clusterResource) Configure(_ context.Context, req resource.ConfigureRequest, _ *resource.ConfigureResponse) {
+func (r *clusterResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
 
-	r.client = req.ProviderData.(*instc.Client)
+	client, ok := req.ProviderData.(*instc.Client)
+
+	if !ok {
+		resp.Diagnostics.AddError(
+			"Unexpected Resource Configure Type",
+			fmt.Sprintf(
+				"Expected *instc.Client, got: %T. Please report this issue to the provider developers.",
+				req.ProviderData,
+			),
+		)
+		return
+	}
+
+	r.client = client
 }
 
 func (r *clusterResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {

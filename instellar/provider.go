@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	// instellar client = instc
+	// instellar client = instc.
 	instc "github.com/upmaru/instellar-go"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -98,7 +98,7 @@ func (p *instellarProvider) Configure(ctx context.Context, req provider.Configur
 			path.Root("auth_token"),
 			"Missing Instellar API Auth Token",
 			"The provider cannot create Instellar API client as there is a missing or empty value for the Instellar API auth token. "+
-				"Set the auth_token value in teh configuration or use the INSTELLAR_AUTH_TOKEN environment variable. "+
+				"Set the auth_token value in the configuration or use the INSTELLAR_AUTH_TOKEN environment variable. "+
 				"If either is already set, ensure the value is not empty.",
 		)
 	}
@@ -117,7 +117,7 @@ func (p *instellarProvider) Configure(ctx context.Context, req provider.Configur
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to create Instellar API Client",
-			"An unexected error occured when creating Instellar API client. "+
+			"An unexected error occurred when creating Instellar API client. "+
 				"If the error is not clear, please contact provider developers.\n\n"+
 				"Instellar Client Error: "+err.Error(),
 		)
