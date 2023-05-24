@@ -8,9 +8,7 @@ import (
 
 const (
 	ProviderConfig = `
-	provider "instellar" {
-		host = "http://localhost:4000"
-	}
+	provider "instellar" {}
 	`
 )
 
