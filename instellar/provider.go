@@ -16,6 +16,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	"github.com/upmaru/terraform-provider-instellar/instellar/cluster"
+	"github.com/upmaru/terraform-provider-instellar/instellar/uplink"
 )
 
 var (
@@ -137,5 +138,6 @@ func (p *instellarProvider) DataSources(_ context.Context) []func() datasource.D
 func (p *instellarProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		cluster.NewClusterResource,
+		uplink.NewUplinkResource,
 	}
 }
