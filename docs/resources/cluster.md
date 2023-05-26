@@ -29,7 +29,7 @@ resource "instellar_cluster" "example" {
 
 - `endpoint` (String) Endpoint for cluster
 - `name` (String) Name assigned by the user
-- `password_token` (String) Password or Trust Token for cluster
+- `password_token` (String, Sensitive) Password or Trust Token for cluster
 - `provider_name` (String) Provider of the infrastructure
 - `region` (String) Region of the cluster
 
