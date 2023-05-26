@@ -3,6 +3,7 @@ package cluster
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	// instellar client = instc.
@@ -83,6 +84,7 @@ func (r *clusterResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			},
 			"password_token": schema.StringAttribute{
 				Description: "Password or Trust Token for cluster",
+				Sensitive:   true,
 				Required:    true,
 			},
 			"last_updated": schema.StringAttribute{
@@ -115,7 +117,6 @@ func (r *clusterResource) Configure(_ context.Context, req resource.ConfigureReq
 }
 
 func (r *clusterResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-
 	var plan clusterResourceModel
 	diags := req.Plan.Get(ctx, &plan)
 
@@ -139,12 +140,12 @@ func (r *clusterResource) Create(ctx context.Context, req resource.CreateRequest
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating instellar cluster",
-			"Cloud not create order, unexpected error: "+err.Error(),
+			"Cloud not create cluster, unexpected error: "+err.Error(),
 		)
 		return
 	}
 
-	plan.ID = types.StringValue(cluster.Data.Attributes.Slug)
+	plan.ID = types.StringValue(strconv.Itoa(cluster.Data.Attributes.ID))
 	plan.Name = types.StringValue(cluster.Data.Attributes.Name)
 	plan.Slug = types.StringValue(cluster.Data.Attributes.Slug)
 	plan.Region = types.StringValue(cluster.Data.Attributes.Region)
@@ -171,7 +172,7 @@ func (r *clusterResource) Read(ctx context.Context, req resource.ReadRequest, re
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading instellar cluster",
-			"Cloud not read cluster id "+state.Slug.ValueString()+": "+err.Error(),
+			"Cloud not read cluster id "+state.ID.ValueString()+": "+err.Error(),
 		)
 		return
 	}
@@ -198,7 +199,7 @@ func (r *clusterResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	_, err := r.client.UpdateCluster(plan.Slug.ValueString())
+	_, err := r.client.UpdateCluster(plan.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating instellar cluster",
@@ -207,12 +208,12 @@ func (r *clusterResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	cluster, err := r.client.GetCluster(plan.Slug.ValueString())
+	cluster, err := r.client.GetCluster(plan.ID.ValueString())
 
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading instellar cluster",
-			"Could not read instellar cluster ID "+plan.Slug.ValueString()+": "+err.Error(),
+			"Could not read instellar cluster ID "+plan.ID.ValueString()+": "+err.Error(),
 		)
 	}
 
@@ -234,7 +235,7 @@ func (r *clusterResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	_, err := r.client.DeleteCluster(state.Slug.ValueString())
+	_, err := r.client.DeleteCluster(state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting cluster",

@@ -8,7 +8,7 @@ import (
 
 const (
 	ProviderConfig = `
-	provider "instellar" {}
+		provider "instellar" {}
 	`
 )
 
