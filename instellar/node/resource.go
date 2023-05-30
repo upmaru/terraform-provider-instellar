@@ -8,6 +8,7 @@ import (
 
 	instc "github.com/upmaru/instellar-go"
 
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -157,4 +158,66 @@ func (r *nodeResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 	if resp.Diagnostics.HasError() {
 		return
 	}
+}
+
+func (r *nodeResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var plan nodeResourceModel
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	nodeParams := instc.NodeParams{
+		PublicIP: plan.PublicIP.ValueString(),
+	}
+
+	_, err := r.client.UpdateNode(plan.ClusterID.ValueString(), plan.Slug.ValueString(), nodeParams)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating node",
+			"Could not update node, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	node, err := r.client.GetNode(plan.ID.ValueString())
+
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error reading node",
+			"Could not read node ID "+plan.ID.ValueString()+": "+err.Error(),
+		)
+	}
+
+	plan.PublicIP = types.StringValue(node.Data.Attributes.PublicIP)
+	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
+
+	diags = resp.State.Set(ctx, plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+}
+
+func (r *nodeResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state nodeResourceModel
+	diags := req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	_, err := r.client.DeleteNode(state.ID.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error deleting node",
+			"Could not delete node, unexpected error: "+err.Error(),
+		)
+		return
+	}
+}
+
+func (r *nodeResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
