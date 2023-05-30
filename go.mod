@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/terraform-plugin-go v0.15.0
 	github.com/hashicorp/terraform-plugin-log v0.8.0
 	github.com/hashicorp/terraform-plugin-testing v1.2.0
-	github.com/upmaru/instellar-go v0.2.6
+	github.com/upmaru/instellar-go v0.2.8
 )
 
 require (
