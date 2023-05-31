@@ -62,6 +62,10 @@ func (r *nodeResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 				Description: "Current state",
 				Computed:    true,
 			},
+			"cluster_id": schema.StringAttribute{
+				Description: "Cluster ID",
+				Required:    true,
+			},
 			"public_ip": schema.StringAttribute{
 				Description: "Public IP of the node",
 				Required:    true,
