@@ -154,6 +154,7 @@ func (r *nodeResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 	}
 
 	state.Slug = types.StringValue(node.Data.Attributes.Slug)
+	state.CurrentState = types.StringValue(node.Data.Attributes.CurrentState)
 	state.ClusterID = types.StringValue(strconv.Itoa(node.Data.Attributes.ClusterID))
 	state.PublicIP = types.StringValue(node.Data.Attributes.PublicIP)
 
@@ -194,6 +195,8 @@ func (r *nodeResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		)
 	}
 
+	plan.Slug = types.StringValue(node.Data.Attributes.Slug)
+	plan.CurrentState = types.StringValue(node.Data.Attributes.CurrentState)
 	plan.PublicIP = types.StringValue(node.Data.Attributes.PublicIP)
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 

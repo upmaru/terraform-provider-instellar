@@ -11,11 +11,15 @@ import (
 )
 
 func TestAccNodeResource(t *testing.T) {
+	clusterUUID := uuid.New()
+	clusterNameSegments := strings.Split(clusterUUID.String(), "-")
+	clusterNameSlug := clusterNameSegments[0]
+
 	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: acceptance.TestAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: buildConfig(),
+				Config: buildConfig(clusterNameSlug, "127.0.0.1"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("instellar_node.test", "slug", "pizza-node-ham"),
 					// Verify computed attribute fields.
@@ -31,15 +35,22 @@ func TestAccNodeResource(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"last_updated", "current_state"},
 			},
+			{
+				Config: buildConfig(clusterNameSlug, "38.56.93.42"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("instellar_node.test", "public_ip", "38.56.93.42"),
+					// Verify computed attribute fields.
+					resource.TestCheckResourceAttr("instellar_node.test", "current_state", "syncing"),
+					// Dynamic values
+					resource.TestCheckResourceAttrSet("instellar_node.test", "id"),
+					resource.TestCheckResourceAttrSet("instellar_node.test", "last_updated"),
+				),
+			},
 		},
 	})
 }
 
-func buildConfig() string {
-	clusterUUID := uuid.New()
-	clusterNameSegments := strings.Split(clusterUUID.String(), "-")
-	clusterNameSlug := clusterNameSegments[0]
-
+func buildConfig(clusterNameSlug string, publicIp string) string {
 	return acceptance.ProviderConfig + fmt.Sprintf(`
 		resource "instellar_cluster" "test" {
 			name = "%s"
@@ -53,11 +64,11 @@ func buildConfig() string {
 			channel_slug = "develop"
 			cluster_id = instellar_cluster.test.id
 		}
-	` + `
+	` + fmt.Sprintf(`
 		resource "instellar_node" "test" {
 			slug = "pizza-node-ham"
-			public_ip = "127.0.0.1"
+			public_ip = "%s"
 			cluster_id = instellar_cluster.test.id
 		}
-	`
+	`, publicIp)
 }
