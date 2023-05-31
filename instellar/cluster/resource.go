@@ -199,7 +199,11 @@ func (r *clusterResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	_, err := r.client.UpdateCluster(plan.ID.ValueString())
+	clusterParams := instc.ClusterParams{
+		CredentialEndpoint: plan.Endpoint.ValueString(),
+	}
+
+	_, err := r.client.UpdateCluster(plan.ID.ValueString(), clusterParams)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating instellar cluster",
@@ -217,6 +221,8 @@ func (r *clusterResource) Update(ctx context.Context, req resource.UpdateRequest
 		)
 	}
 
+	plan.Slug = types.StringValue(cluster.Data.Attributes.Slug)
+	plan.Endpoint = types.StringValue(cluster.Data.Attributes.Endpoint)
 	plan.CurrentState = types.StringValue(cluster.Data.Attributes.CurrentState)
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 

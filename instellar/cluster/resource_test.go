@@ -19,17 +19,11 @@ func TestAccClusterResource(t *testing.T) {
 		ProtoV6ProviderFactories: acceptance.TestAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: acceptance.ProviderConfig + fmt.Sprintf(`
-					resource "instellar_cluster" "test" {
-						name = "%s"
-						provider_name = "aws"
-						region = "ap-southeast-1"
-						endpoint = "127.0.0.1:8443"
-						password_token = "some-password-or-token"
-					}
-				`, clusterNameSlug),
+				Config: buildConfig(clusterNameSlug, "127.0.0.1:8443"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("instellar_cluster.test", "name", clusterNameSlug),
+					resource.TestCheckResourceAttr("instellar_cluster.test", "endpoint", "127.0.0.1:8443"),
+
 					// Verify computed attribute fields.
 					resource.TestCheckResourceAttr("instellar_cluster.test", "slug", clusterNameSlug),
 					resource.TestCheckResourceAttr("instellar_cluster.test", "current_state", "connecting"),
@@ -44,6 +38,30 @@ func TestAccClusterResource(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"last_updated", "password_token", "current_state"},
 			},
+			{
+				Config: buildConfig(clusterNameSlug, "38.43.56.78:8443"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("instellar_cluster.test", "name", clusterNameSlug),
+					resource.TestCheckResourceAttr("instellar_cluster.test", "endpoint", "38.43.56.78:8443"),
+					// Verify computed attribute fields.
+					resource.TestCheckResourceAttr("instellar_cluster.test", "slug", clusterNameSlug),
+					// Verify dynamic vlaues have value set
+					resource.TestCheckResourceAttrSet("instellar_cluster.test", "id"),
+					resource.TestCheckResourceAttrSet("instellar_cluster.test", "last_updated"),
+				),
+			},
 		},
 	})
+}
+
+func buildConfig(clusterNameSlug string, endpoint string) string {
+	return acceptance.ProviderConfig + fmt.Sprintf(`
+		resource "instellar_cluster" "test" {
+			name = "%s"
+			provider_name = "aws"
+			region = "ap-southeast-1"
+			endpoint = "%s"
+			password_token = "some-password-or-token"
+		}
+	`, clusterNameSlug, endpoint)
 }
