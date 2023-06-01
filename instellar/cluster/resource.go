@@ -3,6 +3,7 @@ package cluster
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -14,7 +15,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 )
 
 var (
@@ -61,6 +65,13 @@ func (r *clusterResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			"name": schema.StringAttribute{
 				Description: "Name assigned by the user",
 				Required:    true,
+				Validators: []validator.String{
+					stringvalidator.LengthBetween(3, 32),
+					stringvalidator.RegexMatches(
+						regexp.MustCompile(`^[a-z0-9\-]+$`),
+						"must contain only lowercase alphanumeric characters",
+					),
+				},
 			},
 			"slug": schema.StringAttribute{
 				Description: "Unique slug for cluster",
@@ -73,6 +84,9 @@ func (r *clusterResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			"provider_name": schema.StringAttribute{
 				Description: "Provider of the infrastructure",
 				Required:    true,
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{"aws", "hcloud", "digitalocean", "google", "azurerm"}...),
+				},
 			},
 			"region": schema.StringAttribute{
 				Description: "Region of the cluster",

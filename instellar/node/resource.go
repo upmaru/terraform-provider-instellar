@@ -3,16 +3,19 @@ package node
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strconv"
 	"time"
 
 	instc "github.com/upmaru/instellar-go"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -57,6 +60,12 @@ func (r *nodeResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 			"slug": schema.StringAttribute{
 				Description: "Node slug",
 				Required:    true,
+				Validators: []validator.String{
+					stringvalidator.RegexMatches(
+						regexp.MustCompile(`^[a-z0-9\-]+$`),
+						"must contain only lowercase alphanumeric characters",
+					),
+				},
 			},
 			"current_state": schema.StringAttribute{
 				Description: "Current state",
