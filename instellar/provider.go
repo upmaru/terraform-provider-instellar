@@ -17,6 +17,7 @@ import (
 
 	"github.com/upmaru/terraform-provider-instellar/instellar/cluster"
 	"github.com/upmaru/terraform-provider-instellar/instellar/node"
+	"github.com/upmaru/terraform-provider-instellar/instellar/storage"
 	"github.com/upmaru/terraform-provider-instellar/instellar/uplink"
 )
 
@@ -141,5 +142,6 @@ func (p *instellarProvider) Resources(_ context.Context) []func() resource.Resou
 		cluster.NewClusterResource,
 		uplink.NewUplinkResource,
 		node.NewNodeResource,
+		storage.NewStorageResource,
 	}
 }

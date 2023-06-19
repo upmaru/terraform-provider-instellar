@@ -233,6 +233,7 @@ func (r *clusterResource) Update(ctx context.Context, req resource.UpdateRequest
 			"Error reading instellar cluster",
 			"Could not read instellar cluster ID "+plan.ID.ValueString()+": "+err.Error(),
 		)
+		return
 	}
 
 	plan.Slug = types.StringValue(cluster.Data.Attributes.Slug)

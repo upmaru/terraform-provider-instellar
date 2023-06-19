@@ -211,6 +211,7 @@ func (r *uplinkResource) Update(ctx context.Context, req resource.UpdateRequest,
 			"Error reading uplink",
 			"Could not read uplink ID "+plan.ID.ValueString()+": "+err.Error(),
 		)
+		return
 	}
 
 	plan.ChannelSlug = types.StringValue(uplink.Data.Attributes.ChannelSlug)

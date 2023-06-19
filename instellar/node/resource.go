@@ -202,6 +202,7 @@ func (r *nodeResource) Update(ctx context.Context, req resource.UpdateRequest, r
 			"Error reading node",
 			"Could not read node ID "+plan.ID.ValueString()+": "+err.Error(),
 		)
+		return
 	}
 
 	plan.Slug = types.StringValue(node.Data.Attributes.Slug)
