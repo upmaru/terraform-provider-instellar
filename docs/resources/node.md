@@ -26,5 +26,3 @@ Node management
 - `current_state` (String) Current state
 - `id` (String) Node identifier
 - `last_updated` (String) Timestamp of terraform update
-
-

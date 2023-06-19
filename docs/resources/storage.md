@@ -28,5 +28,3 @@ Storage management
 - `current_state` (String) Current State
 - `id` (String) Storage Identifier
 - `last_updated` (String) Timesmap of teraform update
-
-

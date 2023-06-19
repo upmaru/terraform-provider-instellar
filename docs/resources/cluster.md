@@ -39,5 +39,3 @@ resource "instellar_cluster" "example" {
 - `id` (String) Cluster identifier
 - `last_updated` (String) Timestamp of the terraform update
 - `slug` (String) Unique slug for cluster
-
-
