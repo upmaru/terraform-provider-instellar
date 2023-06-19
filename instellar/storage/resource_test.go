@@ -1,7 +1,6 @@
 package storage_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -34,7 +33,7 @@ func TestAccStorageResource(t *testing.T) {
 }
 
 func buildConfig() string {
-	return acceptance.ProviderConfig + fmt.Sprintf(`
+	return acceptance.ProviderConfig + `
 		resource "instellar_storage" "test" {
 		  host = "s3.amazonaws.com"
 		  bucket = "mybucket"
@@ -42,5 +41,5 @@ func buildConfig() string {
 			access_key_id = "somekey"
 			secret_access_key = "somesecret"
 		}
-	`)
+	`
 }
