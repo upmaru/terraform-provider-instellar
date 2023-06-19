@@ -29,5 +29,3 @@ Uplink management
 - `current_state` (String) The current state of uplink
 - `id` (String) Uplink identifier
 - `last_updated` (String) Timestamp of terraform update
-
-
