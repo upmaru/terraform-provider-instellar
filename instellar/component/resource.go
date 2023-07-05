@@ -37,17 +37,25 @@ type componentResource struct {
 }
 
 type componentResourceModel struct {
-	ID           types.String `tfsdk:"id"`
-	Name         types.String `tfsdk:"name"`
-	Slug         types.String `tfsdk:"slug"`
-	Version      types.String `tfsdk:"version"`
-	CurrentState types.String `tfsdk:"current_state"`
-	Provider     types.String `tfsdk:"provider"`
-	Driver       types.String `tfsdk:"driver"`
-	ClusterIDS   types.List   `tfsdk:"cluster_ids"`
-	Channels     types.List   `tfsdk:"channels"`
-	Credential   types.Object `tfsdk:"credential"`
-	LastUpdated  types.String `tfsdk:"last_updated"`
+	ID            types.String `tfsdk:"id"`
+	Name          types.String `tfsdk:"name"`
+	Slug          types.String `tfsdk:"slug"`
+	DriverVersion types.String `tfsdk:"driver_version"`
+	CurrentState  types.String `tfsdk:"current_state"`
+	ProviderName  types.String `tfsdk:"provider_name"`
+	Driver        types.String `tfsdk:"driver"`
+	ClusterIDS    types.List   `tfsdk:"cluster_ids"`
+	Channels      types.List   `tfsdk:"channels"`
+	Credential    types.Object `tfsdk:"credential"`
+	LastUpdated   types.String `tfsdk:"last_updated"`
+}
+
+type componentCredentialResourceModel struct {
+	Username types.String `tfsdk:"username"`
+	Password types.String `tfsdk:"password"`
+	Database types.String `tfsdk:"database"`
+	Host     types.String `tfsdk:"host"`
+	Port     types.Int64  `tfsdk:"port"`
 }
 
 func (r *componentResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -84,7 +92,11 @@ func (r *componentResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Description: "Current state for the component",
 				Computed:    true,
 			},
-			"provider": schema.StringAttribute{
+			"driver_version": schema.StringAttribute{
+				Description: "Version of the driver",
+				Required:    true,
+			},
+			"provider_name": schema.StringAttribute{
 				Description: "Provider of the infrastructure",
 				Required:    true,
 				Validators: []validator.String{
@@ -105,6 +117,10 @@ func (r *componentResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Required:    true,
 				ElementType: types.StringType,
 			},
+			"last_updated": schema.StringAttribute{
+				Description: "Timestamp of terraform update",
+				Computed:    true,
+			},
 		},
 		Blocks: map[string]schema.Block{
 			"credential": schema.SingleNestedBlock{
@@ -122,7 +138,7 @@ func (r *componentResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 					"host": schema.StringAttribute{
 						Required: true,
 					},
-					"port": schema.NumberAttribute{
+					"port": schema.Int64Attribute{
 						Required: true,
 					},
 				},
@@ -164,28 +180,40 @@ func (r *componentResource) Create(ctx context.Context, req resource.CreateReque
 
 	var ClusterIDS []int
 	var Channels []string
-	var Credential instc.ComponentCredentialParams
+	var Credential componentCredentialResourceModel
 
-	if plan.ClusterIDS.ElementsAs(ctx, &ClusterIDS, false).HasError() {
+	diags = plan.ClusterIDS.ElementsAs(ctx, &ClusterIDS, false)
+
+	resp.Diagnostics.Append(diags...)
+
+	diags = plan.Channels.ElementsAs(ctx, &Channels, false)
+
+	resp.Diagnostics.Append(diags...)
+
+	diags = plan.Credential.As(ctx, &Credential, basetypes.ObjectAsOptions{})
+
+	resp.Diagnostics.Append(diags...)
+
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if plan.Channels.ElementsAs(ctx, &Channels, false).HasError() {
-		return
-	}
-
-	if plan.Credential.As(ctx, &Credential, basetypes.ObjectAsOptions{}).HasError() {
-		return
+	var credentialParams = instc.ComponentCredentialParams{
+		Username: Credential.Username.ValueString(),
+		Password: Credential.Password.ValueString(),
+		Database: Credential.Database.ValueString(),
+		Host:     Credential.Host.ValueString(),
+		Port:     int(Credential.Port.ValueInt64()),
 	}
 
 	componentParams := instc.ComponentParams{
 		Name:       plan.Name.ValueString(),
-		Provider:   plan.Provider.ValueString(),
-		Version:    plan.Version.ValueString(),
+		Provider:   plan.ProviderName.ValueString(),
+		Version:    plan.DriverVersion.ValueString(),
 		Driver:     plan.Driver.ValueString(),
 		ClusterIDS: ClusterIDS,
 		Channels:   Channels,
-		Credential: Credential,
+		Credential: &credentialParams,
 	}
 
 	component, err := r.client.CreateComponent(componentParams)
@@ -233,8 +261,8 @@ func (r *componentResource) Read(ctx context.Context, req resource.ReadRequest, 
 	state.Slug = types.StringValue(component.Data.Attributes.Slug)
 	state.CurrentState = types.StringValue(component.Data.Attributes.CurrentState)
 	state.Driver = types.StringValue(component.Data.Attributes.Driver)
-	state.Provider = types.StringValue(component.Data.Attributes.Provider)
-	state.Version = types.StringValue(component.Data.Attributes.Version)
+	state.ProviderName = types.StringValue(component.Data.Attributes.Provider)
+	state.DriverVersion = types.StringValue(component.Data.Attributes.Version)
 
 	ClusterIDS, d := types.ListValueFrom(ctx, types.NumberType, component.Data.Attributes.ClusterIDS)
 
@@ -254,13 +282,21 @@ func (r *componentResource) Read(ctx context.Context, req resource.ReadRequest, 
 
 	state.Channels = Channels
 
+	credentialData := componentCredentialResourceModel{
+		Username: types.StringValue(component.Data.Attributes.Credential.Username),
+		Password: types.StringValue(component.Data.Attributes.Credential.Password),
+		Database: types.StringValue(component.Data.Attributes.Credential.Database),
+		Host:     types.StringValue(component.Data.Attributes.Credential.Host),
+		Port:     types.Int64Value(int64(component.Data.Attributes.Credential.Port)),
+	}
+
 	Credential, d := types.ObjectValueFrom(ctx, map[string]attr.Type{
 		"username": types.StringType,
 		"password": types.StringType,
 		"database": types.StringType,
 		"host":     types.StringType,
-		"port":     types.NumberType,
-	}, component.Data.Attributes.Credential)
+		"port":     types.Int64Type,
+	}, credentialData)
 
 	resp.Diagnostics.Append(d...)
 	if resp.Diagnostics.HasError() {
@@ -287,11 +323,13 @@ func (r *componentResource) Update(ctx context.Context, req resource.UpdateReque
 	var ClusterIDS []int
 	var Channels []string
 
-	if plan.ClusterIDS.ElementsAs(ctx, &ClusterIDS, false).HasError() {
-		return
-	}
+	diags = plan.ClusterIDS.ElementsAs(ctx, &ClusterIDS, false)
+	resp.Diagnostics.Append(diags...)
 
-	if plan.Channels.ElementsAs(ctx, &Channels, false).HasError() {
+	diags = plan.Channels.ElementsAs(ctx, &Channels, false)
+	resp.Diagnostics.Append(diags...)
+
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
@@ -320,19 +358,18 @@ func (r *componentResource) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	resultClusterIDS, d := types.ListValueFrom(ctx, types.NumberType, component.Data.Attributes.ClusterIDS)
-
 	resp.Diagnostics.Append(d...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
 	resultChannels, d := types.ListValueFrom(ctx, types.StringType, component.Data.Attributes.Channels)
-
 	resp.Diagnostics.Append(d...)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
+	plan.Name = types.StringValue(component.Data.Attributes.Slug)
+	plan.Slug = types.StringValue(component.Data.Attributes.Slug)
+	plan.CurrentState = types.StringValue(component.Data.Attributes.CurrentState)
 	plan.ClusterIDS = resultClusterIDS
 	plan.Channels = resultChannels
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
@@ -352,7 +389,7 @@ func (r *componentResource) Delete(ctx context.Context, req resource.DeleteReque
 		return
 	}
 
-	_, err := r.client.DeleteCluster(state.ID.ValueString())
+	_, err := r.client.DeleteComponent(state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting component",

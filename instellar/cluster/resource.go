@@ -40,7 +40,7 @@ type clusterResourceModel struct {
 	Name          types.String `tfsdk:"name"`
 	Slug          types.String `tfsdk:"slug"`
 	CurrentState  types.String `tfsdk:"current_state"`
-	Provider      types.String `tfsdk:"provider"`
+	ProviderName  types.String `tfsdk:"provider_name"`
 	Region        types.String `tfsdk:"region"`
 	Endpoint      types.String `tfsdk:"endpoint"`
 	PasswordToken types.String `tfsdk:"password_token"`
@@ -81,7 +81,7 @@ func (r *clusterResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Description: "Current state for the cluster",
 				Computed:    true,
 			},
-			"provider": schema.StringAttribute{
+			"provider_name": schema.StringAttribute{
 				Description: "Provider of the infrastructure",
 				Required:    true,
 				Validators: []validator.String{
@@ -142,7 +142,7 @@ func (r *clusterResource) Create(ctx context.Context, req resource.CreateRequest
 
 	clusterParams := instc.ClusterParams{
 		Name:                           plan.Name.ValueString(),
-		Provider:                       plan.Provider.ValueString(),
+		Provider:                       plan.ProviderName.ValueString(),
 		Region:                         plan.Region.ValueString(),
 		CredentialEndpoint:             plan.Endpoint.ValueString(),
 		CredentialPassword:             plan.PasswordToken.ValueString(),
@@ -194,7 +194,7 @@ func (r *clusterResource) Read(ctx context.Context, req resource.ReadRequest, re
 	state.Name = types.StringValue(cluster.Data.Attributes.Name)
 	state.Slug = types.StringValue(cluster.Data.Attributes.Slug)
 	state.Endpoint = types.StringValue(cluster.Data.Attributes.Endpoint)
-	state.Provider = types.StringValue(cluster.Data.Attributes.Provider)
+	state.ProviderName = types.StringValue(cluster.Data.Attributes.Provider)
 	state.Region = types.StringValue(cluster.Data.Attributes.Region)
 	state.CurrentState = types.StringValue(cluster.Data.Attributes.CurrentState)
 

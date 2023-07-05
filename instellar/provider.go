@@ -16,6 +16,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	"github.com/upmaru/terraform-provider-instellar/instellar/cluster"
+	"github.com/upmaru/terraform-provider-instellar/instellar/component"
 	"github.com/upmaru/terraform-provider-instellar/instellar/node"
 	"github.com/upmaru/terraform-provider-instellar/instellar/storage"
 	"github.com/upmaru/terraform-provider-instellar/instellar/uplink"
@@ -143,5 +144,6 @@ func (p *instellarProvider) Resources(_ context.Context) []func() resource.Resou
 		uplink.NewUplinkResource,
 		node.NewNodeResource,
 		storage.NewStorageResource,
+		component.NewComponentResource,
 	}
 }
