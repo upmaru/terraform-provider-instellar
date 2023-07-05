@@ -3,12 +3,12 @@
 page_title: "instellar_cluster Resource - terraform-provider-instellar"
 subcategory: ""
 description: |-
-  Instellar cluster management
+  Clusters are the foundation compute layer that run your application containers.
 ---
 
 # instellar_cluster (Resource)
 
-Instellar cluster management
+Clusters are the foundation compute layer that run your application containers.
 
 ## Example Usage
 
