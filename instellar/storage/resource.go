@@ -48,7 +48,7 @@ func (r *storageResource) Metadata(_ context.Context, req resource.MetadataReque
 
 func (r *storageResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Storage management",
+		Description: "Storage is what instellar use to store all the build artifacts / ssl certificates / others. Basically anything that's needed to manage your deployments.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Storage Identifier",

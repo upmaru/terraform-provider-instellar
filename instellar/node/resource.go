@@ -48,7 +48,7 @@ func (r *nodeResource) Metadata(_ context.Context, req resource.MetadataRequest,
 
 func (r *nodeResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Node management",
+		Description: "Nodes are representation of the low level machine running your cluster. This can be a VM or a Bare Metal machine.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Node identifier",

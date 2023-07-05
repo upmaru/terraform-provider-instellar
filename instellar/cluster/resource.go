@@ -53,7 +53,7 @@ func (r *clusterResource) Metadata(_ context.Context, req resource.MetadataReque
 
 func (r *clusterResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Instellar cluster management",
+		Description: "Clusters are the foundation compute layer that run your application containers.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Cluster identifier",
