@@ -45,7 +45,7 @@ func (r *uplinkResource) Metadata(_ context.Context, req resource.MetadataReques
 
 func (r *uplinkResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Uplink management",
+		Description: "Uplink provides, ingress management, deployment management and environment variable management on your cluster. It routes traffic using caddy and makes sure caddy's config is up-to-date.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Uplink identifier",

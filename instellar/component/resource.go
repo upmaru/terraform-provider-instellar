@@ -64,7 +64,7 @@ func (r *componentResource) Metadata(_ context.Context, req resource.MetadataReq
 
 func (r *componentResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Component management",
+		Description: "Components enable you to add things like PostgreSQL, MySQL, Redis or any other 'components' and associate them to a given cluster.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Component identifier",
