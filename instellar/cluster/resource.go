@@ -40,7 +40,7 @@ type clusterResourceModel struct {
 	Name          types.String `tfsdk:"name"`
 	Slug          types.String `tfsdk:"slug"`
 	CurrentState  types.String `tfsdk:"current_state"`
-	ProviderName  types.String `tfsdk:"provider_name"`
+	Provider      types.String `tfsdk:"provider"`
 	Region        types.String `tfsdk:"region"`
 	Endpoint      types.String `tfsdk:"endpoint"`
 	PasswordToken types.String `tfsdk:"password_token"`
@@ -78,10 +78,10 @@ func (r *clusterResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Computed:    true,
 			},
 			"current_state": schema.StringAttribute{
-				Description: "Endpoint for the cluster",
+				Description: "Current state for the cluster",
 				Computed:    true,
 			},
-			"provider_name": schema.StringAttribute{
+			"provider": schema.StringAttribute{
 				Description: "Provider of the infrastructure",
 				Required:    true,
 				Validators: []validator.String{
@@ -142,7 +142,7 @@ func (r *clusterResource) Create(ctx context.Context, req resource.CreateRequest
 
 	clusterParams := instc.ClusterParams{
 		Name:                           plan.Name.ValueString(),
-		Provider:                       plan.ProviderName.ValueString(),
+		Provider:                       plan.Provider.ValueString(),
 		Region:                         plan.Region.ValueString(),
 		CredentialEndpoint:             plan.Endpoint.ValueString(),
 		CredentialPassword:             plan.PasswordToken.ValueString(),
@@ -194,7 +194,7 @@ func (r *clusterResource) Read(ctx context.Context, req resource.ReadRequest, re
 	state.Name = types.StringValue(cluster.Data.Attributes.Name)
 	state.Slug = types.StringValue(cluster.Data.Attributes.Slug)
 	state.Endpoint = types.StringValue(cluster.Data.Attributes.Endpoint)
-	state.ProviderName = types.StringValue(cluster.Data.Attributes.Provider)
+	state.Provider = types.StringValue(cluster.Data.Attributes.Provider)
 	state.Region = types.StringValue(cluster.Data.Attributes.Region)
 	state.CurrentState = types.StringValue(cluster.Data.Attributes.CurrentState)
 
