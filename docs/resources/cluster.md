@@ -35,7 +35,7 @@ resource "instellar_cluster" "example" {
 
 ### Read-Only
 
-- `current_state` (String) Endpoint for the cluster
+- `current_state` (String) Current state for the cluster
 - `id` (String) Cluster identifier
 - `last_updated` (String) Timestamp of the terraform update
 - `slug` (String) Unique slug for cluster
