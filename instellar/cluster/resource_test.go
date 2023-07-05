@@ -45,7 +45,7 @@ func TestAccClusterResource(t *testing.T) {
 					resource.TestCheckResourceAttr("instellar_cluster.test", "endpoint", "38.43.56.78:8443"),
 					// Verify computed attribute fields.
 					resource.TestCheckResourceAttr("instellar_cluster.test", "slug", clusterNameSlug),
-					// Verify dynamic vlaues have value set
+					// Verify dynamic values have value set
 					resource.TestCheckResourceAttrSet("instellar_cluster.test", "id"),
 					resource.TestCheckResourceAttrSet("instellar_cluster.test", "last_updated"),
 				),

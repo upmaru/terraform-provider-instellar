@@ -78,7 +78,7 @@ func (r *clusterResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Computed:    true,
 			},
 			"current_state": schema.StringAttribute{
-				Description: "Endpoint for the cluster",
+				Description: "Current state for the cluster",
 				Computed:    true,
 			},
 			"provider_name": schema.StringAttribute{
