@@ -68,8 +68,12 @@ resource "instellar_component" "postgres_db" {
 
 Required:
 
-- `database` (String)
-- `host` (String)
-- `password` (String, Sensitive)
-- `port` (Number)
-- `username` (String)
+- `host` (String) Host for the component.
+- `password` (String, Sensitive) Password for the component, this field is sensitive.
+- `port` (Number) Port for the component
+- `resource` (String) Resource for the component, this can be the database name or the region name.
+- `username` (String) Username for the component.
+
+Optional:
+
+- `secure` (Boolean) SSL configuration for the component
