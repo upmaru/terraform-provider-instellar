@@ -53,9 +53,10 @@ type componentResourceModel struct {
 type componentCredentialResourceModel struct {
 	Username types.String `tfsdk:"username"`
 	Password types.String `tfsdk:"password"`
-	Database types.String `tfsdk:"database"`
+	Resource types.String `tfsdk:"resource"`
 	Host     types.String `tfsdk:"host"`
 	Port     types.Int64  `tfsdk:"port"`
+	Secure   types.Bool   `tfsdk:"secure"`
 }
 
 func (r *componentResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -126,20 +127,29 @@ func (r *componentResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 			"credential": schema.SingleNestedBlock{
 				Attributes: map[string]schema.Attribute{
 					"username": schema.StringAttribute{
-						Required: true,
+						Required:    true,
+						Description: "Username for the component.",
 					},
 					"password": schema.StringAttribute{
-						Required:  true,
-						Sensitive: true,
+						Required:    true,
+						Sensitive:   true,
+						Description: "Password for the component, this field is sensitive.",
 					},
-					"database": schema.StringAttribute{
-						Required: true,
+					"resource": schema.StringAttribute{
+						Required:    true,
+						Description: "Resource for the component, this can be the database name or the region name.",
 					},
 					"host": schema.StringAttribute{
-						Required: true,
+						Required:    true,
+						Description: "Host for the component.",
 					},
 					"port": schema.Int64Attribute{
-						Required: true,
+						Required:    true,
+						Description: "Port for the component",
+					},
+					"secure": schema.BoolAttribute{
+						Optional:    true,
+						Description: "SSL configuration for the component",
 					},
 				},
 			},
@@ -201,9 +211,10 @@ func (r *componentResource) Create(ctx context.Context, req resource.CreateReque
 	var credentialParams = instc.ComponentCredentialParams{
 		Username: Credential.Username.ValueString(),
 		Password: Credential.Password.ValueString(),
-		Database: Credential.Database.ValueString(),
+		Resource: Credential.Resource.ValueString(),
 		Host:     Credential.Host.ValueString(),
 		Port:     int(Credential.Port.ValueInt64()),
+		Secure:   Credential.Secure.ValueBool(),
 	}
 
 	componentParams := instc.ComponentParams{
@@ -285,17 +296,19 @@ func (r *componentResource) Read(ctx context.Context, req resource.ReadRequest, 
 	credentialData := componentCredentialResourceModel{
 		Username: types.StringValue(component.Data.Attributes.Credential.Username),
 		Password: types.StringValue(component.Data.Attributes.Credential.Password),
-		Database: types.StringValue(component.Data.Attributes.Credential.Database),
+		Resource: types.StringValue(component.Data.Attributes.Credential.Resource),
 		Host:     types.StringValue(component.Data.Attributes.Credential.Host),
 		Port:     types.Int64Value(int64(component.Data.Attributes.Credential.Port)),
+		Secure:   types.BoolValue(component.Data.Attributes.Credential.Secure),
 	}
 
 	Credential, d := types.ObjectValueFrom(ctx, map[string]attr.Type{
 		"username": types.StringType,
 		"password": types.StringType,
-		"database": types.StringType,
+		"resource": types.StringType,
 		"host":     types.StringType,
 		"port":     types.Int64Type,
+		"secure":   types.BoolType,
 	}, credentialData)
 
 	resp.Diagnostics.Append(d...)
