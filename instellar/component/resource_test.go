@@ -78,9 +78,10 @@ func buildConfig(clusterName string, componentName string, channels string) stri
 			credential {
 				username = "postgres"
 				password = "postgres"
-				database = "postgres"
+				resource = "postgres"
 				host = "localhost"
 				port = 5432
+				secure = true
 			}
 		}
 	`, clusterName, componentName, channels)
