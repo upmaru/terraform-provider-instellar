@@ -66,7 +66,7 @@ func (r *clusterResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Description: "Name assigned by the user",
 				Required:    true,
 				Validators: []validator.String{
-					stringvalidator.LengthBetween(3, 32),
+					stringvalidator.LengthBetween(3, 48),
 					stringvalidator.RegexMatches(
 						regexp.MustCompile(`^[a-z0-9\-]+$`),
 						"must contain only lowercase alphanumeric characters",
