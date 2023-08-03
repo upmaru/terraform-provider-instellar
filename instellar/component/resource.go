@@ -78,7 +78,7 @@ func (r *componentResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Description: "Name of the component assigned by the user",
 				Required:    true,
 				Validators: []validator.String{
-					stringvalidator.LengthBetween(3, 32),
+					stringvalidator.LengthBetween(3, 64),
 					stringvalidator.RegexMatches(
 						regexp.MustCompile(`^[a-z0-9\-]+$`),
 						"must contain only lowercase alphanumeric characters",
