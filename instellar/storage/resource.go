@@ -32,14 +32,15 @@ type storageResource struct {
 }
 
 type storageResourceModel struct {
-	ID              types.String `tfsdk:"id"`
-	CurrentState    types.String `tfsdk:"current_state"`
-	Host            types.String `tfsdk:"host"`
-	Bucket          types.String `tfsdk:"bucket"`
-	Region          types.String `tfsdk:"region"`
-	AccessKeyID     types.String `tfsdk:"access_key_id"`
-	SecretAccessKey types.String `tfsdk:"secret_access_key"`
-	LastUpdated     types.String `tfsdk:"last_updated"`
+	ID                  types.String `tfsdk:"id"`
+	CurrentState        types.String `tfsdk:"current_state"`
+	Host                types.String `tfsdk:"host"`
+	Bucket              types.String `tfsdk:"bucket"`
+	Region              types.String `tfsdk:"region"`
+	AccessKeyID         types.String `tfsdk:"access_key_id"`
+	SecretAccessKey     types.String `tfsdk:"secret_access_key"`
+	InsterraComponentID types.Int64  `tfsdk:"insterra_component_id"`
+	LastUpdated         types.String `tfsdk:"last_updated"`
 }
 
 func (r *storageResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -81,6 +82,10 @@ func (r *storageResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Description: "Secret access key",
 				Required:    true,
 				Sensitive:   true,
+			},
+			"insterra_component_id": schema.Int64Attribute{
+				Description: "Reference to insterra component",
+				Optional:    true,
 			},
 			"last_updated": schema.StringAttribute{
 				Description: "Timesmap of teraform update",
@@ -127,6 +132,7 @@ func (r *storageResource) Create(ctx context.Context, req resource.CreateRequest
 		Region:                    plan.Region.ValueString(),
 		CredentialAccessKeyID:     plan.AccessKeyID.ValueString(),
 		CredentialSecretAccessKey: plan.SecretAccessKey.ValueString(),
+		InsterraComponentID:       int(plan.InsterraComponentID.ValueInt64()),
 	}
 
 	storage, err := r.client.CreateStorage(storageParams)

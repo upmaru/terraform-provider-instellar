@@ -37,7 +37,7 @@ func TestAccComponentResource(t *testing.T) {
 				ResourceName:            "instellar_component.test",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"last_updated", "current_state"},
+				ImportStateVerifyIgnore: []string{"last_updated", "current_state", "insterra_component_id"},
 			},
 			{
 				Config: buildConfig(clusterNameSlug, componentName, `["develop", "master"]`),
