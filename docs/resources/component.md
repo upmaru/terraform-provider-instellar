@@ -55,6 +55,7 @@ resource "instellar_component" "postgres_db" {
 ### Optional
 
 - `credential` (Block, Optional) (see [below for nested schema](#nestedblock--credential))
+- `insterra_component_id` (Number) Reference to insterra component
 
 ### Read-Only
 

@@ -33,6 +33,10 @@ resource "instellar_cluster" "example" {
 - `provider_name` (String) Provider of the infrastructure
 - `region` (String) Region of the cluster
 
+### Optional
+
+- `insterra_component_id` (Number) Reference to insterra component
+
 ### Read-Only
 
 - `current_state` (String) Current state for the cluster
