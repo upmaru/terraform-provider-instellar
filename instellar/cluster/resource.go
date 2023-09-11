@@ -36,15 +36,16 @@ type clusterResource struct {
 }
 
 type clusterResourceModel struct {
-	ID            types.String `tfsdk:"id"`
-	Name          types.String `tfsdk:"name"`
-	Slug          types.String `tfsdk:"slug"`
-	CurrentState  types.String `tfsdk:"current_state"`
-	ProviderName  types.String `tfsdk:"provider_name"`
-	Region        types.String `tfsdk:"region"`
-	Endpoint      types.String `tfsdk:"endpoint"`
-	PasswordToken types.String `tfsdk:"password_token"`
-	LastUpdated   types.String `tfsdk:"last_updated"`
+	ID                  types.String `tfsdk:"id"`
+	Name                types.String `tfsdk:"name"`
+	Slug                types.String `tfsdk:"slug"`
+	CurrentState        types.String `tfsdk:"current_state"`
+	ProviderName        types.String `tfsdk:"provider_name"`
+	Region              types.String `tfsdk:"region"`
+	Endpoint            types.String `tfsdk:"endpoint"`
+	PasswordToken       types.String `tfsdk:"password_token"`
+	InsterraComponentID types.Int64  `tfsdk:"insterra_component_id"`
+	LastUpdated         types.String `tfsdk:"last_updated"`
 }
 
 func (r *clusterResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -101,6 +102,10 @@ func (r *clusterResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Sensitive:   true,
 				Required:    true,
 			},
+			"insterra_component_id": schema.Int64Attribute{
+				Description: "Reference to insterra component",
+				Optional:    true,
+			},
 			"last_updated": schema.StringAttribute{
 				Description: "Timestamp of the terraform update",
 				Computed:    true,
@@ -147,6 +152,7 @@ func (r *clusterResource) Create(ctx context.Context, req resource.CreateRequest
 		CredentialEndpoint:             plan.Endpoint.ValueString(),
 		CredentialPassword:             plan.PasswordToken.ValueString(),
 		CredentialPasswordConfirmation: plan.PasswordToken.ValueString(),
+		InsterraComponentID:            int(plan.InsterraComponentID.ValueInt64()),
 	}
 
 	cluster, err := r.client.CreateCluster(clusterParams)

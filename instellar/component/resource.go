@@ -37,17 +37,18 @@ type componentResource struct {
 }
 
 type componentResourceModel struct {
-	ID            types.String `tfsdk:"id"`
-	Name          types.String `tfsdk:"name"`
-	Slug          types.String `tfsdk:"slug"`
-	DriverVersion types.String `tfsdk:"driver_version"`
-	CurrentState  types.String `tfsdk:"current_state"`
-	ProviderName  types.String `tfsdk:"provider_name"`
-	Driver        types.String `tfsdk:"driver"`
-	ClusterIDS    types.List   `tfsdk:"cluster_ids"`
-	Channels      types.List   `tfsdk:"channels"`
-	Credential    types.Object `tfsdk:"credential"`
-	LastUpdated   types.String `tfsdk:"last_updated"`
+	ID                  types.String `tfsdk:"id"`
+	Name                types.String `tfsdk:"name"`
+	Slug                types.String `tfsdk:"slug"`
+	DriverVersion       types.String `tfsdk:"driver_version"`
+	CurrentState        types.String `tfsdk:"current_state"`
+	ProviderName        types.String `tfsdk:"provider_name"`
+	Driver              types.String `tfsdk:"driver"`
+	ClusterIDS          types.List   `tfsdk:"cluster_ids"`
+	Channels            types.List   `tfsdk:"channels"`
+	Credential          types.Object `tfsdk:"credential"`
+	InsterraComponentID types.Int64  `tfsdk:"insterra_component_id"`
+	LastUpdated         types.String `tfsdk:"last_updated"`
 }
 
 type componentCredentialResourceModel struct {
@@ -117,6 +118,10 @@ func (r *componentResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Description: "Channels to restrict component availability",
 				Required:    true,
 				ElementType: types.StringType,
+			},
+			"insterra_component_id": schema.Int64Attribute{
+				Description: "Reference to insterra component",
+				Optional:    true,
 			},
 			"last_updated": schema.StringAttribute{
 				Description: "Timestamp of terraform update",
@@ -218,13 +223,14 @@ func (r *componentResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	componentParams := instc.ComponentParams{
-		Name:       plan.Name.ValueString(),
-		Provider:   plan.ProviderName.ValueString(),
-		Version:    plan.DriverVersion.ValueString(),
-		Driver:     plan.Driver.ValueString(),
-		ClusterIDS: ClusterIDS,
-		Channels:   Channels,
-		Credential: &credentialParams,
+		Name:                plan.Name.ValueString(),
+		Provider:            plan.ProviderName.ValueString(),
+		Version:             plan.DriverVersion.ValueString(),
+		Driver:              plan.Driver.ValueString(),
+		ClusterIDS:          ClusterIDS,
+		Channels:            Channels,
+		InsterraComponentID: int(plan.InsterraComponentID.ValueInt64()),
+		Credential:          &credentialParams,
 	}
 
 	component, err := r.client.CreateComponent(componentParams)

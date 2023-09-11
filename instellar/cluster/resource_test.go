@@ -36,7 +36,7 @@ func TestAccClusterResource(t *testing.T) {
 				ResourceName:            "instellar_cluster.test",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"last_updated", "password_token", "current_state"},
+				ImportStateVerifyIgnore: []string{"last_updated", "password_token", "current_state", "insterra_component_id"},
 			},
 			{
 				Config: buildConfig(clusterNameSlug, "38.43.56.78:8443"),

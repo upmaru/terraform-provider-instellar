@@ -37,7 +37,7 @@ func TestAccComponentResource(t *testing.T) {
 				ResourceName:            "instellar_component.test",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"last_updated", "current_state"},
+				ImportStateVerifyIgnore: []string{"last_updated", "current_state", "insterra_component_id"},
 			},
 			{
 				Config: buildConfig(clusterNameSlug, componentName, `["develop", "master"]`),
@@ -64,6 +64,7 @@ func buildConfig(clusterName string, componentName string, channels string) stri
 			region = "ap-southeast-1"
 			endpoint = "127.0.0.1:8443"
 			password_token = "some-password-or-token"
+			insterra_component_id = 3
 		}
 
 		resource "instellar_component" "test" {
@@ -75,6 +76,7 @@ func buildConfig(clusterName string, componentName string, channels string) stri
 				instellar_cluster.test.id
 			]
 			channels = %s
+			insterra_component_id = 2
 			credential {
 				username = "postgres"
 				password = "postgres"

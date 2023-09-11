@@ -26,7 +26,7 @@ func TestAccStorageResource(t *testing.T) {
 				ResourceName:            "instellar_storage.test",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"last_updated", "current_state"},
+				ImportStateVerifyIgnore: []string{"last_updated", "current_state", "insterra_component_id"},
 			},
 		},
 	})

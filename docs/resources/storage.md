@@ -33,6 +33,10 @@ resource "instellar_storage" "this" {
 - `region` (String) Region of storage
 - `secret_access_key` (String, Sensitive) Secret access key
 
+### Optional
+
+- `insterra_component_id` (Number) Reference to insterra component
+
 ### Read-Only
 
 - `current_state` (String) Current State
