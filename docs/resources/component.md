@@ -77,4 +77,5 @@ Required:
 
 Optional:
 
+- `certificate` (String) Certificate URL or PEM
 - `secure` (Boolean) SSL configuration for the component

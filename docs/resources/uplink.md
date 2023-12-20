@@ -35,10 +35,7 @@ resource "instellar_uplink" "this" {
 
 - `channel_slug` (String) Which distribution channel are we using?
 - `cluster_id` (String) Which cluster does uplink belong to
-
-### Optional
-
-- `database_url` (String, Sensitive) Database URL to use with uplink, if supplied will setup uplink pro
+- `kit_slug` (String) Which kit are we using? lite | pro
 
 ### Read-Only
 
