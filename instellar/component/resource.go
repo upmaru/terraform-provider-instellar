@@ -306,12 +306,12 @@ func (r *componentResource) Read(ctx context.Context, req resource.ReadRequest, 
 	state.Channels = Channels
 
 	credentialData := componentCredentialResourceModel{
-		Username:    types.StringValue(component.Data.Attributes.Credential.Username),
-		Password:    types.StringValue(component.Data.Attributes.Credential.Password),
-		Resource:    types.StringValue(component.Data.Attributes.Credential.Resource),
-		Host:        types.StringValue(component.Data.Attributes.Credential.Host),
-		Port:        types.Int64Value(int64(component.Data.Attributes.Credential.Port)),
-		Secure:      types.BoolValue(component.Data.Attributes.Credential.Secure),
+		Username: types.StringValue(component.Data.Attributes.Credential.Username),
+		Password: types.StringValue(component.Data.Attributes.Credential.Password),
+		Resource: types.StringValue(component.Data.Attributes.Credential.Resource),
+		Host:     types.StringValue(component.Data.Attributes.Credential.Host),
+		Port:     types.Int64Value(int64(component.Data.Attributes.Credential.Port)),
+		Secure:   types.BoolValue(component.Data.Attributes.Credential.Secure),
 	}
 
 	if component.Data.Attributes.Credential.Certificate != nil {

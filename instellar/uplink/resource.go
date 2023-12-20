@@ -33,7 +33,7 @@ type uplinkResource struct {
 type uplinkResourceModel struct {
 	ID           types.String `tfsdk:"id"`
 	ChannelSlug  types.String `tfsdk:"channel_slug"`
-	KitSlug	     types.String `tfsdk:"kit_slug"`
+	KitSlug      types.String `tfsdk:"kit_slug"`
 	CurrentState types.String `tfsdk:"current_state"`
 	ClusterID    types.String `tfsdk:"cluster_id"`
 	LastUpdated  types.String `tfsdk:"last_updated"`
@@ -60,7 +60,7 @@ func (r *uplinkResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 			},
 			"kit_slug": schema.StringAttribute{
 				Description: "Which kit are we using? lite | pro",
-				Required: true,
+				Required:    true,
 			},
 			"current_state": schema.StringAttribute{
 				Description: "The current state of uplink",
@@ -111,7 +111,7 @@ func (r *uplinkResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	uplinkSetupParams := instc.UplinkSetupParams{
 		ChannelSlug: plan.ChannelSlug.ValueString(),
-		KitSlug: plan.KitSlug.ValueString(),
+		KitSlug:     plan.KitSlug.ValueString(),
 	}
 
 	uplink, err := r.client.CreateUplink(plan.ClusterID.ValueString(), uplinkSetupParams)
