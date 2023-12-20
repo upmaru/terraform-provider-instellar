@@ -62,6 +62,7 @@ func buildConfig(clusterNameSlug string, publicIp string) string {
 	`, clusterNameSlug) + `
 		resource "instellar_uplink" "test" {
 			channel_slug = "develop"
+			kit_slug = "lite"
 			cluster_id = instellar_cluster.test.id
 		}
 	` + fmt.Sprintf(`

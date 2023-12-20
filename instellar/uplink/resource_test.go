@@ -18,6 +18,7 @@ func TestAccUplinkResource_lite(t *testing.T) {
 				Config: buildConfig_lite(),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("instellar_uplink.test", "channel_slug", "develop"),
+					resource.TestCheckResourceAttr("instellar_uplink.test", "kit_slug", "lite"),
 					// Verify computed attribute fields.
 					resource.TestCheckResourceAttr("instellar_uplink.test", "current_state", "created"),
 					// Dynamic values
@@ -43,6 +44,7 @@ func TestAccUplinkResource_pro(t *testing.T) {
 				Config: buildConfig_pro(),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("instellar_uplink.test", "channel_slug", "develop"),
+					resource.TestCheckResourceAttr("instellar_uplink.test", "kit_slug", "pro"),
 					// Verify computed attribute fields.
 					resource.TestCheckResourceAttr("instellar_uplink.test", "current_state", "created"),
 					// Dynamic values
@@ -76,6 +78,7 @@ func buildConfig_lite() string {
 	`, clusterNameSlug) + `
 		resource "instellar_uplink" "test" {
 			channel_slug = "develop"
+			kit_slug = "lite"
 			cluster_id = instellar_cluster.test.id
 		}
 	`
@@ -97,8 +100,8 @@ func buildConfig_pro() string {
 	`, clusterNameSlug) + `
 		resource "instellar_uplink" "test" {
 			channel_slug = "develop"
+			kit_slug = "pro"
 			cluster_id = instellar_cluster.test.id
-			database_url = "postgresql://user:pass@localhost:5432/some_db_example"
 		}
 	`
 }
