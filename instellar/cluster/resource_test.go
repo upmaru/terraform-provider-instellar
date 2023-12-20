@@ -13,7 +13,7 @@ import (
 func TestAccClusterResource(t *testing.T) {
 	clusterUUID := uuid.New()
 	clusterNameSegments := strings.Split(clusterUUID.String(), "-")
-	clusterNameSlug := clusterNameSegments[0]
+	clusterNameSlug := strings.Join([]string{clusterNameSegments[0], clusterNameSegments[1]}, "-")
 
 	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: acceptance.TestAccProtoV6ProviderFactories,

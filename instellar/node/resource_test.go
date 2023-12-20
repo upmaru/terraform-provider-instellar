@@ -13,7 +13,7 @@ import (
 func TestAccNodeResource(t *testing.T) {
 	clusterUUID := uuid.New()
 	clusterNameSegments := strings.Split(clusterUUID.String(), "-")
-	clusterNameSlug := clusterNameSegments[0]
+	clusterNameSlug := strings.Join([]string{clusterNameSegments[0], clusterNameSegments[1]}, "-")
 
 	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: acceptance.TestAccProtoV6ProviderFactories,
@@ -62,6 +62,7 @@ func buildConfig(clusterNameSlug string, publicIp string) string {
 	`, clusterNameSlug) + `
 		resource "instellar_uplink" "test" {
 			channel_slug = "develop"
+			kit_slug = "lite"
 			cluster_id = instellar_cluster.test.id
 		}
 	` + fmt.Sprintf(`

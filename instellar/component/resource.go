@@ -52,12 +52,13 @@ type componentResourceModel struct {
 }
 
 type componentCredentialResourceModel struct {
-	Username types.String `tfsdk:"username"`
-	Password types.String `tfsdk:"password"`
-	Resource types.String `tfsdk:"resource"`
-	Host     types.String `tfsdk:"host"`
-	Port     types.Int64  `tfsdk:"port"`
-	Secure   types.Bool   `tfsdk:"secure"`
+	Username    types.String `tfsdk:"username"`
+	Password    types.String `tfsdk:"password"`
+	Resource    types.String `tfsdk:"resource"`
+	Certificate types.String `tfsdk:"certificate"`
+	Host        types.String `tfsdk:"host"`
+	Port        types.Int64  `tfsdk:"port"`
+	Secure      types.Bool   `tfsdk:"secure"`
 }
 
 func (r *componentResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -152,6 +153,10 @@ func (r *componentResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 						Required:    true,
 						Description: "Port for the component",
 					},
+					"certificate": schema.StringAttribute{
+						Optional:    true,
+						Description: "Certificate URL or PEM",
+					},
 					"secure": schema.BoolAttribute{
 						Optional:    true,
 						Description: "SSL configuration for the component",
@@ -214,12 +219,13 @@ func (r *componentResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	var credentialParams = instc.ComponentCredentialParams{
-		Username: Credential.Username.ValueString(),
-		Password: Credential.Password.ValueString(),
-		Resource: Credential.Resource.ValueString(),
-		Host:     Credential.Host.ValueString(),
-		Port:     int(Credential.Port.ValueInt64()),
-		Secure:   Credential.Secure.ValueBool(),
+		Username:    Credential.Username.ValueString(),
+		Password:    Credential.Password.ValueString(),
+		Resource:    Credential.Resource.ValueString(),
+		Certificate: Credential.Certificate.ValueString(),
+		Host:        Credential.Host.ValueString(),
+		Port:        int(Credential.Port.ValueInt64()),
+		Secure:      Credential.Secure.ValueBool(),
 	}
 
 	componentParams := instc.ComponentParams{
@@ -308,13 +314,18 @@ func (r *componentResource) Read(ctx context.Context, req resource.ReadRequest, 
 		Secure:   types.BoolValue(component.Data.Attributes.Credential.Secure),
 	}
 
+	if component.Data.Attributes.Credential.Certificate != nil {
+		credentialData.Certificate = types.StringValue(*component.Data.Attributes.Credential.Certificate)
+	}
+
 	Credential, d := types.ObjectValueFrom(ctx, map[string]attr.Type{
-		"username": types.StringType,
-		"password": types.StringType,
-		"resource": types.StringType,
-		"host":     types.StringType,
-		"port":     types.Int64Type,
-		"secure":   types.BoolType,
+		"username":    types.StringType,
+		"password":    types.StringType,
+		"resource":    types.StringType,
+		"certificate": types.StringType,
+		"host":        types.StringType,
+		"port":        types.Int64Type,
+		"secure":      types.BoolType,
 	}, credentialData)
 
 	resp.Diagnostics.Append(d...)
