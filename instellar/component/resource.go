@@ -152,6 +152,10 @@ func (r *componentResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 						Required:    true,
 						Description: "Port for the component",
 					},
+					"certificate": schema.StringAttribute{
+						Optional: true,
+						Description: "Certificate URL or PEM",
+					},
 					"secure": schema.BoolAttribute{
 						Optional:    true,
 						Description: "SSL configuration for the component",
