@@ -65,7 +65,7 @@ func TestAccUplinkResource_pro(t *testing.T) {
 func buildConfig_lite() string {
 	clusterUUID := uuid.New()
 	clusterNameSegments := strings.Split(clusterUUID.String(), "-")
-	clusterNameSlug := clusterNameSegments[0]
+	clusterNameSlug := strings.Join([]string{clusterNameSegments[0], clusterNameSegments[1]}, "-")
 
 	return acceptance.ProviderConfig + fmt.Sprintf(`
 		resource "instellar_cluster" "test" {

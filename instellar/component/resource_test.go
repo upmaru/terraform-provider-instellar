@@ -13,8 +13,8 @@ import (
 func TestAccComponentResource(t *testing.T) {
 	clusterUUID := uuid.New()
 	clusterNameSegments := strings.Split(clusterUUID.String(), "-")
-	clusterNameSlug := clusterNameSegments[0]
-
+	clusterNameSlug := strings.Join([]string{clusterNameSegments[0], clusterNameSegments[1]}, "-")
+	
 	componentName := fmt.Sprintf("%s-db", clusterNameSlug)
 
 	resource.ParallelTest(t, resource.TestCase{
