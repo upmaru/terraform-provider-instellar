@@ -33,9 +33,9 @@ type uplinkResource struct {
 type uplinkResourceModel struct {
 	ID           types.String `tfsdk:"id"`
 	ChannelSlug  types.String `tfsdk:"channel_slug"`
+	KitSlug      types.String `tfsdk:"kit_slug"`
 	CurrentState types.String `tfsdk:"current_state"`
 	ClusterID    types.String `tfsdk:"cluster_id"`
-	DatabaseURL  types.String `tfsdk:"database_url"`
 	LastUpdated  types.String `tfsdk:"last_updated"`
 }
 
@@ -58,6 +58,10 @@ func (r *uplinkResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 				Description: "Which distribution channel are we using?",
 				Required:    true,
 			},
+			"kit_slug": schema.StringAttribute{
+				Description: "Which kit are we using? lite | pro",
+				Required:    true,
+			},
 			"current_state": schema.StringAttribute{
 				Description: "The current state of uplink",
 				Computed:    true,
@@ -65,14 +69,6 @@ func (r *uplinkResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 			"cluster_id": schema.StringAttribute{
 				Description: "Which cluster does uplink belong to",
 				Required:    true,
-			},
-			"database_url": schema.StringAttribute{
-				Description: "Database URL to use with uplink, if supplied will setup uplink pro",
-				Optional:    true,
-				Sensitive:   true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"last_updated": schema.StringAttribute{
 				Description: "Timestamp of terraform update",
@@ -113,7 +109,10 @@ func (r *uplinkResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	uplinkSetupParams := buildSetupParams(plan)
+	uplinkSetupParams := instc.UplinkSetupParams{
+		ChannelSlug: plan.ChannelSlug.ValueString(),
+		KitSlug:     plan.KitSlug.ValueString(),
+	}
 
 	uplink, err := r.client.CreateUplink(plan.ClusterID.ValueString(), uplinkSetupParams)
 
@@ -130,28 +129,11 @@ func (r *uplinkResource) Create(ctx context.Context, req resource.CreateRequest,
 	plan.ClusterID = types.StringValue(strconv.Itoa(uplink.Data.Attributes.ClusterID))
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 
-	if uplink.Data.Attributes.DatabaseURL != nil {
-		plan.DatabaseURL = types.StringValue(*uplink.Data.Attributes.DatabaseURL)
-	}
-
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 
 	if resp.Diagnostics.HasError() {
 		return
-	}
-}
-
-func buildSetupParams(plan uplinkResourceModel) instc.UplinkSetupParams {
-	if plan.ClusterID.IsNull() {
-		return instc.UplinkSetupParams{
-			ChannelSlug: plan.ChannelSlug.ValueString(),
-		}
-	} else {
-		return instc.UplinkSetupParams{
-			ChannelSlug: plan.ChannelSlug.ValueString(),
-			DatabaseURL: plan.DatabaseURL.ValueString(),
-		}
 	}
 }
 
@@ -173,12 +155,9 @@ func (r *uplinkResource) Read(ctx context.Context, req resource.ReadRequest, res
 	}
 
 	state.ChannelSlug = types.StringValue(uplink.Data.Attributes.ChannelSlug)
+	state.KitSlug = types.StringValue(uplink.Data.Attributes.KitSlug)
 	state.CurrentState = types.StringValue(uplink.Data.Attributes.CurrentState)
 	state.ClusterID = types.StringValue(strconv.Itoa(uplink.Data.Attributes.ClusterID))
-
-	if uplink.Data.Attributes.DatabaseURL != nil {
-		state.DatabaseURL = types.StringValue(*uplink.Data.Attributes.DatabaseURL)
-	}
 
 	diags = resp.State.Set(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -215,12 +194,9 @@ func (r *uplinkResource) Update(ctx context.Context, req resource.UpdateRequest,
 	}
 
 	plan.ChannelSlug = types.StringValue(uplink.Data.Attributes.ChannelSlug)
+	plan.KitSlug = types.StringValue(uplink.Data.Attributes.KitSlug)
 	plan.CurrentState = types.StringValue(uplink.Data.Attributes.CurrentState)
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
-
-	if uplink.Data.Attributes.DatabaseURL != nil {
-		plan.DatabaseURL = types.StringValue(*uplink.Data.Attributes.DatabaseURL)
-	}
 
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
