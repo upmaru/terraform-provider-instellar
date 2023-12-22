@@ -174,7 +174,12 @@ func (r *uplinkResource) Update(ctx context.Context, req resource.UpdateRequest,
 		return
 	}
 
-	_, err := r.client.UpdateUplink(plan.ID.ValueString())
+	uplinkSetupParams := instc.UplinkSetupParams{
+		ChannelSlug: plan.ChannelSlug.ValueString(),
+		KitSlug:     plan.KitSlug.ValueString(),
+	}
+
+	_, err := r.client.UpdateUplink(plan.ID.ValueString(), uplinkSetupParams)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating uplink",
