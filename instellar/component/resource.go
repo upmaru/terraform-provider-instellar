@@ -352,6 +352,7 @@ func (r *componentResource) Update(ctx context.Context, req resource.UpdateReque
 
 	var ClusterIDS []int
 	var Channels []string
+	var Credential componentCredentialResourceModel
 
 	diags = plan.ClusterIDS.ElementsAs(ctx, &ClusterIDS, false)
 	resp.Diagnostics.Append(diags...)
@@ -359,13 +360,27 @@ func (r *componentResource) Update(ctx context.Context, req resource.UpdateReque
 	diags = plan.Channels.ElementsAs(ctx, &Channels, false)
 	resp.Diagnostics.Append(diags...)
 
+	diags = plan.Credential.As(ctx, &Credential, basetypes.ObjectAsOptions{})
+	resp.Diagnostics.Append(diags...)
+
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	var credentialParams = instc.ComponentCredentialParams{
+		Username:    Credential.Username.ValueString(),
+		Password:    Credential.Password.ValueString(),
+		Resource:    Credential.Resource.ValueString(),
+		Certificate: Credential.Certificate.ValueString(),
+		Host:        Credential.Host.ValueString(),
+		Port:        int(Credential.Port.ValueInt64()),
+		Secure:      Credential.Secure.ValueBool(),
 	}
 
 	componentParams := instc.ComponentParams{
 		ClusterIDS: ClusterIDS,
 		Channels:   Channels,
+		Credential: &credentialParams,
 	}
 
 	_, err := r.client.UpdateComponent(plan.ID.ValueString(), componentParams)

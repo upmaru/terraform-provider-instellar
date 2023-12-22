@@ -40,12 +40,14 @@ func TestAccComponentResource(t *testing.T) {
 				ImportStateVerifyIgnore: []string{"last_updated", "current_state", "insterra_component_id"},
 			},
 			{
-				Config: buildConfig(clusterNameSlug, componentName, `["develop", "master"]`),
+				Config: buildConfigWithCert(clusterNameSlug, componentName, `["develop", "master"]`),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("instellar_component.test", "name", componentName),
 					// Verify computed attribute fields.
 					resource.TestCheckResourceAttr("instellar_component.test", "slug", componentName),
 					resource.TestCheckResourceAttr("instellar_component.test", "current_state", "active"),
+					resource.TestCheckResourceAttr("instellar_component.test", "credential.username", "postgres"),
+					resource.TestCheckResourceAttr("instellar_component.test", "credential.certificate", "https://some.cert/file.pem"),
 					resource.TestCheckResourceAttr("instellar_component.test", "channels.#", "2"),
 					// Verify dynamic values have value set
 					resource.TestCheckResourceAttrSet("instellar_component.test", "id"),
@@ -81,6 +83,40 @@ func buildConfig(clusterName string, componentName string, channels string) stri
 				username = "postgres"
 				password = "postgres"
 				resource = "postgres"
+				host = "localhost"
+				port = 5432
+				secure = true
+			}
+		}
+	`, clusterName, componentName, channels)
+}
+
+func buildConfigWithCert(clusterName string, componentName string, channels string) string {
+	return acceptance.ProviderConfig + fmt.Sprintf(`
+		resource "instellar_cluster" "test" {
+			name = "%s"
+			provider_name = "aws"
+			region = "ap-southeast-1"
+			endpoint = "127.0.0.1:8443"
+			password_token = "some-password-or-token"
+			insterra_component_id = 3
+		}
+
+		resource "instellar_component" "test" {
+			name = "%s"
+			provider_name = "aws"
+			driver = "database/postgresql"
+			driver_version = "15.2"
+			cluster_ids = [
+				instellar_cluster.test.id
+			]
+			channels = %s
+			insterra_component_id = 2
+			credential {
+				username = "postgres"
+				password = "postgres"
+				resource = "postgres"
+				certificate = "https://some.cert/file.pem"
 				host = "localhost"
 				port = 5432
 				secure = true
