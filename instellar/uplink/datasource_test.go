@@ -43,9 +43,9 @@ func buildDataConfig(clusterNameSlug string, channelSlug string, kitSlug string)
 			kit_slug = "%s"
 			cluster_id = instellar_cluster.test.id
 		}
-	`, channelSlug, kitSlug) + fmt.Sprintf(`
+	`, channelSlug, kitSlug) + `
 		data "instellar_uplink" "test" {
 			id = instellar_uplink.test.id
 		}
-	`)
+	`
 }
