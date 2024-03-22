@@ -15,6 +15,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
+	"github.com/upmaru/terraform-provider-instellar/instellar/balancer"
 	"github.com/upmaru/terraform-provider-instellar/instellar/cluster"
 	"github.com/upmaru/terraform-provider-instellar/instellar/component"
 	"github.com/upmaru/terraform-provider-instellar/instellar/node"
@@ -144,6 +145,7 @@ func (p *instellarProvider) Resources(_ context.Context) []func() resource.Resou
 	return []func() resource.Resource{
 		cluster.NewClusterResource,
 		uplink.NewUplinkResource,
+		balancer.NewBalancerResource,
 		node.NewNodeResource,
 		storage.NewStorageResource,
 		component.NewComponentResource,

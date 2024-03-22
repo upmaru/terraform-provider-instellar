@@ -165,3 +165,71 @@ func (r *balancerResource) Read(ctx context.Context, req resource.ReadRequest, r
 		return
 	}
 }
+
+func (r *balancerResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var plan balancerResourceModel
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	balancerParams := instc.BalancerParams{
+		Name: plan.Name.ValueString(),
+		Address: plan.Address.ValueString(),
+	}
+
+	_, err := r.client.UpdateBalancer(plan.ID.ValueString(), balancerParams)
+
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating balancer",
+			"Could not update balancer, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	balancer, err := r.client.GetBalancer(plan.ID.ValueString())
+
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error reading balancer",
+			"Could not read balancer ID "+plan.ID.ValueString()+": "+err.Error(),
+		)
+		return
+	}
+
+	plan.Name = types.StringValue(balancer.Data.Attributes.Name)
+	plan.Address = types.StringValue(balancer.Data.Attributes.Address)
+	plan.CurrentState = types.StringValue(balancer.Data.Attributes.CurrentState)
+	plan.ClusterID = types.StringValue(strconv.Itoa(balancer.Data.Attributes.ClusterID))
+	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
+
+	diags = resp.State.Set(ctx, plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+}
+
+func (r *balancerResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state *balancerResourceModel
+	diags := req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	_, err := r.client.DeleteBalancer(state.ID.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error deleting balancer",
+			"Cloud not delete balancer, unexpected error: "+err.Error(),
+		)
+		return
+	}
+}
+
+func (r *balancerResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+}
