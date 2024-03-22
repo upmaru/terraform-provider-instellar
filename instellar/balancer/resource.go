@@ -46,7 +46,7 @@ func (r *balancerResource) Metadata(_ context.Context, req resource.MetadataRequ
 
 func (r *balancerResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Balancer is what instellar use to balance the load of the incoming requests to the instellar components.",
+		Description: "Balancer registers the load balancer address from your infrastructure load balancer and tells OpsMaru to use the load balancer address for communicating with the cluster.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Balancer identifier",

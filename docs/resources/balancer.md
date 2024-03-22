@@ -3,12 +3,12 @@
 page_title: "instellar_balancer Resource - terraform-provider-instellar"
 subcategory: ""
 description: |-
-  Balancer is what instellar use to balance the load of the incoming requests to the instellar components.
+  Balancer registers the load balancer address from your infrastructure load balancer and tells OpsMaru to use the load balancer address for communicating with the cluster.
 ---
 
 # instellar_balancer (Resource)
 
-Balancer is what instellar use to balance the load of the incoming requests to the instellar components.
+Balancer registers the load balancer address from your infrastructure load balancer and tells OpsMaru to use the load balancer address for communicating with the cluster.
 
 ## Example Usage
 
