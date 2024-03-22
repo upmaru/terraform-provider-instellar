@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	_ resource.Resource = &balancerResource{}
-	_ resource.ResourceWithConfigure = &balancerResource{}
+	_ resource.Resource                = &balancerResource{}
+	_ resource.ResourceWithConfigure   = &balancerResource{}
 	_ resource.ResourceWithImportState = &balancerResource{}
 )
 
@@ -32,12 +32,12 @@ type balancerResource struct {
 }
 
 type balancerResourceModel struct {
-	ID									types.String `tfsdk:"id"`
-	Name								types.String `tfsdk:"name"`
-	Address							types.String `tfsdk:"address"`
-	CurrentState				types.String `tfsdk:"current_state"`
-	ClusterID           types.String `tfsdk:"cluster_id"`
-	LastUpdated         types.String `tfsdk:"last_updated"`
+	ID           types.String `tfsdk:"id"`
+	Name         types.String `tfsdk:"name"`
+	Address      types.String `tfsdk:"address"`
+	CurrentState types.String `tfsdk:"current_state"`
+	ClusterID    types.String `tfsdk:"cluster_id"`
+	LastUpdated  types.String `tfsdk:"last_updated"`
 }
 
 func (r *balancerResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -111,7 +111,7 @@ func (r *balancerResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	balancerParams := instc.BalancerParams{
-		Name: plan.Name.ValueString(),
+		Name:    plan.Name.ValueString(),
 		Address: plan.Address.ValueString(),
 	}
 
@@ -119,7 +119,7 @@ func (r *balancerResource) Create(ctx context.Context, req resource.CreateReques
 
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Failed to create balancer", 
+			"Failed to create balancer",
 			"Could not create balancer, unexpected error: "+err.Error(),
 		)
 		return
@@ -175,7 +175,7 @@ func (r *balancerResource) Update(ctx context.Context, req resource.UpdateReques
 	}
 
 	balancerParams := instc.BalancerParams{
-		Name: plan.Name.ValueString(),
+		Name:    plan.Name.ValueString(),
 		Address: plan.Address.ValueString(),
 	}
 
