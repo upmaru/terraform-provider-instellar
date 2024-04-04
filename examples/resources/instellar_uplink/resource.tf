@@ -8,6 +8,6 @@ resource "instellar_cluster" "main" {
 
 resource "instellar_uplink" "this" {
   channel_slug = "master"
+  kit_slug     = "lite"
   cluster_id   = instellar_cluster.main.id
-  database_url = "postgresql://user:pass@localhost:5432/some_db_example"
 }
