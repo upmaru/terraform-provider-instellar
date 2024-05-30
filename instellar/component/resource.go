@@ -380,6 +380,7 @@ func (r *componentResource) Update(ctx context.Context, req resource.UpdateReque
 	componentParams := instc.ComponentParams{
 		ClusterIDS: ClusterIDS,
 		Channels:   Channels,
+		Version:    plan.DriverVersion.ValueString(),
 		Credential: &credentialParams,
 	}
 
