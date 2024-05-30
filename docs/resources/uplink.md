@@ -23,8 +23,8 @@ resource "instellar_cluster" "main" {
 
 resource "instellar_uplink" "this" {
   channel_slug = "master"
+  kit_slug     = "lite"
   cluster_id   = instellar_cluster.main.id
-  database_url = "postgresql://user:pass@localhost:5432/some_db_example"
 }
 ```
 
@@ -41,4 +41,5 @@ resource "instellar_uplink" "this" {
 
 - `current_state` (String) The current state of uplink
 - `id` (String) Uplink identifier
+- `installation_id` (String) Which installation does uplink belong to
 - `last_updated` (String) Timestamp of terraform update

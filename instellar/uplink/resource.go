@@ -31,12 +31,13 @@ type uplinkResource struct {
 }
 
 type uplinkResourceModel struct {
-	ID           types.String `tfsdk:"id"`
-	ChannelSlug  types.String `tfsdk:"channel_slug"`
-	KitSlug      types.String `tfsdk:"kit_slug"`
-	CurrentState types.String `tfsdk:"current_state"`
-	ClusterID    types.String `tfsdk:"cluster_id"`
-	LastUpdated  types.String `tfsdk:"last_updated"`
+	ID             types.String `tfsdk:"id"`
+	ChannelSlug    types.String `tfsdk:"channel_slug"`
+	KitSlug        types.String `tfsdk:"kit_slug"`
+	CurrentState   types.String `tfsdk:"current_state"`
+	ClusterID      types.String `tfsdk:"cluster_id"`
+	InstallationID types.String `tfsdk:"installation_id"`
+	LastUpdated    types.String `tfsdk:"last_updated"`
 }
 
 func (r *uplinkResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,6 +70,10 @@ func (r *uplinkResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 			"cluster_id": schema.StringAttribute{
 				Description: "Which cluster does uplink belong to",
 				Required:    true,
+			},
+			"installation_id": schema.StringAttribute{
+				Description: "Which installation does uplink belong to",
+				Computed:    true,
 			},
 			"last_updated": schema.StringAttribute{
 				Description: "Timestamp of terraform update",
@@ -127,6 +132,7 @@ func (r *uplinkResource) Create(ctx context.Context, req resource.CreateRequest,
 	plan.ID = types.StringValue(strconv.Itoa(uplink.Data.Attributes.ID))
 	plan.CurrentState = types.StringValue(uplink.Data.Attributes.CurrentState)
 	plan.ClusterID = types.StringValue(strconv.Itoa(uplink.Data.Attributes.ClusterID))
+	plan.InstallationID = types.StringValue(strconv.Itoa(uplink.Data.Attributes.InstallationID))
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 
 	diags = resp.State.Set(ctx, plan)
@@ -158,6 +164,7 @@ func (r *uplinkResource) Read(ctx context.Context, req resource.ReadRequest, res
 	state.KitSlug = types.StringValue(uplink.Data.Attributes.KitSlug)
 	state.CurrentState = types.StringValue(uplink.Data.Attributes.CurrentState)
 	state.ClusterID = types.StringValue(strconv.Itoa(uplink.Data.Attributes.ClusterID))
+	state.InstallationID = types.StringValue(strconv.Itoa(uplink.Data.Attributes.InstallationID))
 
 	diags = resp.State.Set(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -201,6 +208,7 @@ func (r *uplinkResource) Update(ctx context.Context, req resource.UpdateRequest,
 	plan.ChannelSlug = types.StringValue(uplink.Data.Attributes.ChannelSlug)
 	plan.KitSlug = types.StringValue(uplink.Data.Attributes.KitSlug)
 	plan.CurrentState = types.StringValue(uplink.Data.Attributes.CurrentState)
+	plan.InstallationID = types.StringValue(strconv.Itoa(uplink.Data.Attributes.InstallationID))
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 
 	diags = resp.State.Set(ctx, plan)
