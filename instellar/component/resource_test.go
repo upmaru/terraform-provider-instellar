@@ -21,7 +21,7 @@ func TestAccComponentResource(t *testing.T) {
 		ProtoV6ProviderFactories: acceptance.TestAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: buildConfig(clusterNameSlug, componentName, `["develop"]`),
+				Config: buildConfig(clusterNameSlug, componentName, "15.2", `["develop"]`),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("instellar_component.test", "name", componentName),
 					// Verify computed attribute fields.
@@ -40,7 +40,7 @@ func TestAccComponentResource(t *testing.T) {
 				ImportStateVerifyIgnore: []string{"last_updated", "current_state", "insterra_component_id"},
 			},
 			{
-				Config: buildConfigWithCert(clusterNameSlug, componentName, `["develop", "master"]`),
+				Config: buildConfigWithCert(clusterNameSlug, componentName, "15.5", `["develop", "master"]`),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("instellar_component.test", "name", componentName),
 					// Verify computed attribute fields.
@@ -58,7 +58,7 @@ func TestAccComponentResource(t *testing.T) {
 	})
 }
 
-func buildConfig(clusterName string, componentName string, channels string) string {
+func buildConfig(clusterName string, componentName string, version string, channels string) string {
 	return acceptance.ProviderConfig + fmt.Sprintf(`
 		resource "instellar_cluster" "test" {
 			name = "%s"
@@ -73,7 +73,7 @@ func buildConfig(clusterName string, componentName string, channels string) stri
 			name = "%s"
 			provider_name = "aws"
 			driver = "database/postgresql"
-			driver_version = "15.2"
+			driver_version = "%s"
 			cluster_ids = [
 				instellar_cluster.test.id
 			]
@@ -88,10 +88,10 @@ func buildConfig(clusterName string, componentName string, channels string) stri
 				secure = true
 			}
 		}
-	`, clusterName, componentName, channels)
+	`, clusterName, componentName, version, channels)
 }
 
-func buildConfigWithCert(clusterName string, componentName string, channels string) string {
+func buildConfigWithCert(clusterName string, componentName string, version string, channels string) string {
 	return acceptance.ProviderConfig + fmt.Sprintf(`
 		resource "instellar_cluster" "test" {
 			name = "%s"
@@ -106,7 +106,7 @@ func buildConfigWithCert(clusterName string, componentName string, channels stri
 			name = "%s"
 			provider_name = "aws"
 			driver = "database/postgresql"
-			driver_version = "15.2"
+			driver_version = "%s"
 			cluster_ids = [
 				instellar_cluster.test.id
 			]
@@ -122,5 +122,5 @@ func buildConfigWithCert(clusterName string, componentName string, channels stri
 				secure = true
 			}
 		}
-	`, clusterName, componentName, channels)
+	`, clusterName, componentName, version, channels)
 }
